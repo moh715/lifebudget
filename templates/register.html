@@ -1,0 +1,21 @@
+{% extends "main.html" %}
+{% block title %}
+   register
+{% endblock %}
+<head>
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+{% block main %}
+    <form id="testForm" action="/register" method="post">
+    <div class="mb-3">
+    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Username" type="text">
+    </div>
+    <div class="mb-3">
+    <input autocomplete="off" class="form-control mx-auto w-auto" name="password" placeholder="password" type="text">
+    </div>
+    <div class="mb-3">
+    <input autocomplete="off" class="form-control mx-auto w-auto" name="confirmation" placeholder="confirm password" type="text">
+    </div>
+    <button class="btn btn-primary" type="submit">create an account</button>
+    </form>
+{% endblock %}

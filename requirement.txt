@@ -1,0 +1,6 @@
+Flask
+Flask-Session
+Flask-SQLAlchemy
+Flask-Migrate
+Werkzeug
+python-dateutil

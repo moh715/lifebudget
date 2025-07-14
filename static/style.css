@@ -1,0 +1,192 @@
+
+nav {
+    background-color: rgb(195, 201, 193);
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+    font-size: 1rem;
+    margin-right: 1rem;
+}
+
+.navbar-brand.logo {
+    width: 90px;
+    height: auto;
+    padding: 0;
+}
+.navbar-brand .blue {
+    color: #537fbe;
+}
+.navbar-brand .red {
+    color: #ea433b;
+}
+.navbar-brand .yellow {
+    color: #f5b82e;
+}
+.navbar-brand .green {
+    color: #2e944b;
+}
+.navbar-nav .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+/* Error message style */
+.error_msge {
+    background-color: #f8d7da; /* Light red */
+    color: #842029; /* Dark red */
+    padding: 10px;
+    border: 1px solid #f5c2c7; /* Border color */
+    border-radius: 5px;
+    margin: 15px 0;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.flash-messages .alert {
+    display: none; /* Hide any Bootstrap alert styling */
+}
+
+/* General Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+/* Progress Bar Styling */
+.progress-bar {
+    height: 20px;
+    width: 100%;
+    background-color: #ddd;
+}
+.progress {
+    height: 100%;
+    background-color: #4CAF50;
+}
+.over-budget .progress {
+    background-color: #f44336;
+}
+#description {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+button {
+    padding: 1px 2px;
+    border: none;
+    border-radius: 10px;
+    font-size:10px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#budgetPieChart {
+        max-width: 400px;
+        max-height: 400px;
+        margin: 0 auto; /* Centers the chart */
+}
+
+
+.delete-budget-btn {
+    background-color: #e74c3c; /* Red background for danger */
+    color: white; /* White text color */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Add padding for size */
+    font-size: 16px; /* Set font size */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for color and scale */
+}
+
+.delete-budget-btn:hover {
+    background-color: #c0392b; /* Darker red on hover */
+    transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+.delete-budget-btn:active {
+    background-color: #a93226; /* Even darker red when button is clicked */
+    transform: scale(1); /* Reset scale when clicked */
+}
+
+
+.edit-budget-button {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    font-size: 16px; /* Text size */
+    padding: 10px 20px; /* Padding around text */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Cursor changes to pointer */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+}
+
+
+.edit-budget-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+
+.edit-budget-button:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(72, 202, 96, 0.6);
+}
+
+
+#editBudgetForm .form-control {
+    max-width: 300px;
+}
+
+#editBudgetForm .remove-btn {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+#editBudgetForm .remove-btn:hover {
+    background-color: #c82333;
+}
+
+#addCategoryBtn {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+#addCategoryBtn:hover {
+    background-color: #0056b3;
+}
+
+.table-bordered {
+    border: 2px solid #dee2e6;
+}
+
+.table-bordered th, .table-bordered td {
+    vertical-align: middle;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #343a40;
+}

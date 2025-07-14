@@ -1,0 +1,37 @@
+{% extends "main.html" %}
+{% block title %}
+    generat plan
+{% endblock %}
+{% block main %}
+
+<form id="testForm" action="/generat_budget" method='post'>
+    <h1 id="income" data-description="The total amount of money you earn in a month from sources like your job, business, or other activities.">Income:<button onclick="showDescriptionbutton('income', 'inc', this)" type="button">more info</button></h1>
+    <p id="inc"></p>
+    <div>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="income" placeholder="enter your income" type="Number" min="1">
+        </div>
+        <div>
+            <select id="choices" name="goal" onchange="showDescription()">
+                <option value="" disabled selected>Select your goal</option>
+                {% for goal  in goals %}
+                    <option value="{{ goal.name }}" data-description="amount: {{ goal.target_amount }}$   term: {{ goal.term }}">{{ goal.name }}</option>
+                {% endfor %}
+                <option value="custom" data-description="inter how want your goal">make your goal</option>
+            </select>
+            <div id="custom-inputs-goals"></div>
+            <p id="descriptionText"></p>
+        </div>
+        <h2 id="Fixed Expenses" data-description="Recurring expenses that remain the same each month, such as rent, insurance, or subscription services">Fixed Expenses:<button onclick="showDescriptionbutton('Fixed Expenses','fix', this)" type="button">more info</button></h2>
+        <p id="fix"></p>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="FixedExpenses" placeholder="enter your Fixed Expenses" type="Number" min="1">
+        </div>
+        <h3 id="VariableExpenses" data-description="These are expenses that change every month, such as groceries, utilities, transportation, entertainment, and more. If you want, you can use the amounts from your last month's spending as a reference.">Variable Expenses:<button onclick="showDescriptionbutton('VariableExpenses','var', this)" type="button">more info</button></h3>
+        <p id="var"></p>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="VariableExpenses" placeholder="enter your Variable Expenses" type="Number" min="1">
+        </div>
+        <button class="btn btn-primary" type="submit">make a budget plan</button>
+    </form>
+{% endblock %}

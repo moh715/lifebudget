@@ -1,0 +1,167 @@
+{% extends "main.html" %}
+{% block title %}
+    Budget Overview
+{% endblock %}
+{% block main %}
+<div class="container my-4">
+    <h1 class="text-center">Your Budget Overview</h1>
+    <!-- Budget Table -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Budget</th>
+                <th>Spent</th>
+                <th>Remaining</th>
+                <th>Percentage of Income</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="budgetTableBody">
+            <!-- Dynamic Rows -->
+        </tbody>
+    </table>
+    <!-- Pie Chart -->
+    <div>
+        <canvas id="budgetPieChart"></canvas>
+    </div>
+</div>
+
+<!-- Add Spent Modal -->
+<button path="/edit_budget" class="route-button edit-budget-button">Edit Budget</button>
+<button path="/deletBudget" class="route-button delete-budget-btn">Delete Budget</button>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const buttons = document.querySelectorAll(".route-button");
+
+    buttons.forEach(button => {
+            button.addEventListener("click", function() {
+                const path = this.getAttribute("path");
+                if (path) {
+                    window.location.href = path;
+                } else {
+                    console.error("No path attribute found on the button.");
+                }
+            });
+        });
+    });
+
+
+
+
+    function formatNumber(num) {
+        return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Parse budgets from the server
+    const budgetData = JSON.parse('{{ budgets|tojson }}');
+    console.log("Budget Data:", budgetData);
+
+    const tableBody = document.getElementById('budgetTableBody');
+
+    // Populate the table with rows that have inline actions
+    budgetData.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.category}</td>
+            <td>$${formatNumber(item.budget)}</td>
+            <td class="spent-cell">$${formatNumber(item.spent)}</td>
+            <td class="remaining-cell">$${formatNumber(item.remaining)}</td>
+            <td>${formatNumber(item.percentage)}%</td>
+            <td>
+                <input type="number" class="form-control form-control-sm spent-input" min="0" step="0.01" placeholder="Add Spent" data-category="${item.category}">
+                <button class="btn btn-sm btn-primary add-spent-btn" data-category="${item.category}">Add</button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    // Handle adding spent directly within the table
+    tableBody.addEventListener('click', function (e) {
+        if (e.target.classList.contains('add-spent-btn')) {
+            const button = e.target;
+            const category = button.getAttribute('data-category');
+            const input = button.previousElementSibling;
+            const amount = parseFloat(input.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount.');
+                input.value = '';
+                return;
+            }
+
+            // Send data to the backend
+            fetch('/add_spent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ category, amount }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data.message);
+
+                    // Update the table dynamically
+                    const row = button.closest('tr');
+                    const spentCell = row.querySelector('.spent-cell');
+                    const remainingCell = row.querySelector('.remaining-cell');
+                    const budgetCell = row.querySelector('.budget-cell')
+                    const currentSpent = parseFloat(spentCell.textContent.replace(/[$,]/g, ''));
+                    const currentRemaining = parseFloat(remainingCell.textContent.replace(/[$,]/g, ''));
+
+                    spentCell.textContent = `$${formatNumber((currentSpent + amount))}`;
+                    remainingCell.textContent = `$${formatNumber((currentRemaining - amount))}`;
+
+                    // Clear the input field
+                    input.value = '';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add spent amount. Please try again.');
+                });
+        }
+    });
+
+
+    // Create pie chart
+    const ctx = document.getElementById('budgetPieChart').getContext('2d');
+    const pieData = {
+        labels: budgetData.map(item => item.category),
+        datasets: [{
+            label: 'Budget Allocation',
+            data: budgetData.map(item => item.budget),
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+        }]
+    };
+    console.log("Pie Data:", pieData);
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: pieData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const value = tooltipItem.raw;
+                            return `$${formatNumber(value)}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

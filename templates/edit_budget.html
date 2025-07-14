@@ -1,0 +1,98 @@
+{% extends "main.html" %}
+{% block title %}
+    Edit Budget Plan
+{% endblock %}
+{% block main %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Edit Your Budget Plan</h1>
+    <form id="editBudgetForm" action="/edit_budget" method="post">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Category</th>
+                        <th>Original Budget</th>
+                        <th>Edit Budget</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="editBudgetTableBody">
+                    {% for budget in budgets %}
+                    <tr id="row-{{ budget.category }}">
+                        <td>{{ budget.category }}</td>
+                        <td>${{ budget.budgeted }}</td>
+                        <td>
+                            <input type="number" name="budgets[{{ budget.category }}]"
+                                   class="form-control budget-input"
+                                   value="{{ budget.budgeted }}"
+                                   min="0" step="0.01">
+                        </td>
+                        <td>
+                            {% if budget.category != 'Savings' %}
+                                <button type="button" class="btn btn-danger btn-sm remove-btn"
+                                        data-category="{{ budget.category }}">
+                                    Remove
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="addCategoryBtn">Add Category</button>
+            <button type="submit" class="btn btn-success">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const editBudgetTableBody = document.getElementById('editBudgetTableBody');
+    const addCategoryBtn = document.getElementById('addCategoryBtn');
+
+    // Handle removing a category via route
+    editBudgetTableBody.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-btn')) {
+            const category = e.target.getAttribute('data-category');
+            fetch(`/delete_category`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ category: category }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove the row visually
+                    const row = document.getElementById(`row-${category}`);
+                    if (row) row.remove();
+                } else {
+                    console.error('Failed to delete category');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+
+    // Handle adding a new category
+    addCategoryBtn.addEventListener('click', function () {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>
+                <input type="text" name="newCategory[]" class="form-control" placeholder="New Category" required>
+            </td>
+            <td>--</td>
+            <td>
+                <input type="number" name="newBudget[]" class="form-control" min="0" step="0.01" required>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm remove-btn">Remove</button>
+            </td>
+        `;
+        editBudgetTableBody.appendChild(newRow);
+    });
+});
+</script>
+{% endblock %}

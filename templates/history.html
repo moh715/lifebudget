@@ -1,0 +1,53 @@
+{% extends "main.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+<div class="container my-4">
+    <h1 class="text-center">Budget History</h1>
+
+    {% if plans %}
+        <div class="accordion" id="historyAccordion">
+            {% for plan in plans %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                            Plan {{ loop.index }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#historyAccordion">
+                        <div class="accordion-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Budget</th>
+                                        <th>Spent</th>
+                                        <th>Percentage</th>
+                                        <th>Remaining</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for budget in plan.budgets %}
+                                        <tr>
+                                            <td>{{ budget.category }}</td>
+                                            <td>${{ budget.budget }}</td>
+                                            <td>${{ budget.spent }}</td>
+                                            <td>{{ budget.percentage }}%</td>
+                                            <td>${{ budget.remaining }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center">No budget history available.</p>
+    {% endif %}
+</div>
+{% endblock %}
