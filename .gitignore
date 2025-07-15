@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+lifebudget.db
+flask_session/

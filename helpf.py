@@ -32,6 +32,7 @@ def usd(value):
     return f"${value:,.2f}"
 def budget(income, fixed, term, variable, user_id, target):
     from app import db, custom_Budget
+    variable += .2 * variable
     end_plan = custom_Budget.query.filter_by(user_id=user_id, is_active=False).all()
     Expenses = float(fixed) + float(variable)
     remaining = float(income) - Expenses

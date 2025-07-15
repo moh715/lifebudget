@@ -9,6 +9,9 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 import os
 
+# Allowable buffer for budget over income (e.g., to account for rounding errors)
+BUDGET_ALLOWANCE_BUFFER = 2
+
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -300,9 +303,12 @@ def add_spent():
 def edit_budget():
     budgets = custom_Budget.query.filter_by(user_id=session["user_id"], is_active=True).all()
     goal = Goal.query.filter_by(user_id=session["user_id"], status="In Progress").first()
-    target_in_month = goal.target_amount / int(goal.term.split(" ")[0])
+    if goal:
+        target_in_month = goal.target_amount / int(goal.term.split(" ")[0])
+    else:
+        target_in_month = 0
     income = User.query.filter_by(id=session["user_id"]).first().income
-
+    print([type(b) for b in budgets])
     if request.method == 'POST':
             total_budget = 0
 
@@ -313,22 +319,23 @@ def edit_budget():
                      custom_budget = custom_Budget.query.filter_by(user_id=session["user_id"], category=category, is_active=True).first()
                      if custom_budget:
                             db.session.delete(custom_budget)
-
+            
             # Process updated and new budgets
             for category, budget in request.form.items():
                 if category.startswith("budgets["):
                     category_name = category.split('[')[1].rstrip(']')
                     try:
                         budget_value = float(budget)
-                        if budget_value < 0:
-                            flash(f"Budget for {category_name} cannot be negative.", "danger")
-                            return redirect(url_for('edit_budget'))
-                        for budget in budgets:
-                            if budget.category == category_name:
-                                if budget.category == "savings" and budget.budgeted > budget_value:
-                                    flash(f"Savings budget of ${savings:.2f} is below your goal of ${target_in_month:.2f}.", "danger")
+                        
+                        for b in budgets:
+                            if b.category == category_name:
+                                if category_name == "savings" and budget_value < target_in_month:
+                                    flash(f"Savings budget of ${budget_value:.2f} is below your goal of ${target_in_month:.2f}.", "danger")
                                     return redirect(url_for('edit_budget'))
-                                budget.budgeted = budget_value
+                                # if budget.category == "savings" and budget.budgeted < target_in_month:
+                                #     flash(f"Savings budget of ${budget.budgeted:.2f} is below your goal of ${target_in_month:.2f}.", "danger")
+                                #     return redirect(url_for('edit_budget'))
+                                b.budgeted = budget_value
                                 total_budget += budget_value
                     except ValueError:
                         flash(f"Invalid budget value for {category_name}.", "danger")
@@ -359,7 +366,7 @@ def edit_budget():
                         flash(f"Invalid budget value for new category {category}.", "danger")
                         return redirect(url_for('edit_budget'))
 
-            if total_budget > income+2:
+            if total_budget > income + BUDGET_ALLOWANCE_BUFFER:
                 flash(f"Total budget of ${total_budget:.2f} exceeds your income of ${income:.2f}.", "danger")
                 return redirect(url_for('edit_budget'))
 
